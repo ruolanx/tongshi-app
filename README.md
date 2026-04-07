@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tongshi — 我们适合做同事吗？
+
+一个轻量级 MVP，让用户通过 10 个工作场景问题比较工作风格匹配度。
+
+## Tech Stack
+
+- **Next.js** (App Router + TypeScript)
+- **Tailwind CSS**
+- **Supabase** (Database + Auth-less)
 
 ## Getting Started
 
-First, run the development server:
+### 1. 创建 Supabase 项目
+
+前往 [supabase.com](https://supabase.com) 创建一个新项目。
+
+### 2. 运行数据库 Schema
+
+在 Supabase Dashboard → SQL Editor 中执行 `supabase/schema.sql` 文件的内容。
+这会创建 `users`、`questions`、`answers` 三张表，并填充 10 道占位题目。
+
+### 3. 配置环境变量
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+填入你的 Supabase 项目 URL 和 anon key：
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. 安装 & 启动
 
-## Learn More
+```bash
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+打开 [http://localhost:3000](http://localhost:3000)。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 项目结构
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+tongshi-app/
+├── app/
+│   ├── page.tsx              # 加入页面（输入代号）
+│   ├── questions/page.tsx    # 答题页面
+│   ├── dashboard/page.tsx    # 仪表盘（用户列表）
+│   └── compare/[userId]/     # 对比页面
+├── components/               # UI 组件
+├── lib/
+│   ├── supabase.ts           # Supabase 客户端
+│   ├── match.ts              # 匹配分数计算
+│   ├── user-context.tsx      # 用户会话管理
+│   └── utils.ts              # 工具函数
+├── types/                    # TypeScript 类型
+├── seed/                     # 题目种子数据
+└── supabase/
+    └── schema.sql            # 数据库 Schema + 种子数据
+```
 
-## Deploy on Vercel
+## 功能
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **代号加入** — 无需注册，选个代号即可
+- **10 题场景问答** — 逐题回答，自动保存
+- **用户仪表盘** — 查看所有用户和在线状态
+- **匹配对比** — 与其他用户逐题对比 + 匹配分数
+- **在线状态** — 基于心跳的轻量在线检测
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 匹配算法
+
+```
+match_score = (相同答案数 / 共同已答题数) × 100
+```
+
+- 80–100%: Strong match
+- 55–79%: Mixed but workable
+- 0–54%: Friction likely
