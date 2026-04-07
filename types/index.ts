@@ -1,5 +1,12 @@
-export interface User {
+export interface Session {
   id: string;
+  code: string;
+  created_at: string;
+}
+
+export interface Player {
+  id: string;
+  session_id: string;
   codename: string;
   created_at: string;
   last_active_at: string;
@@ -18,44 +25,43 @@ export interface Question {
 
 export interface Answer {
   id: string;
-  user_id: string;
+  player_id: string;
   question_id: number;
-  selected_option: "A" | "B" | "C" | "D";
+  selected_option: OptionKey;
   created_at: string;
-  updated_at: string;
 }
 
 export type OptionKey = "A" | "B" | "C" | "D";
 
-export interface CompareResult {
+export interface MatchResult {
   totalQuestions: number;
   commonAnswered: number;
   matchingAnswers: number;
   matchScore: number;
-  details: CompareDetail[];
+  details: MatchDetail[];
 }
 
-export interface CompareDetail {
+export interface MatchDetail {
   question: Question;
   myAnswer: OptionKey | null;
   theirAnswer: OptionKey | null;
   isMatch: boolean;
 }
 
-export function getMatchLabel(score: number): string {
-  if (score >= 80) return "Strong match";
-  if (score >= 55) return "Mixed but workable";
-  return "Friction likely";
+export function getMatchLabel(score: number): { text: string; emoji: string } {
+  if (score >= 80) return { text: "默契搭档", emoji: "🔥" };
+  if (score >= 55) return { text: "磨合空间", emoji: "🤝" };
+  return { text: "火花四溅", emoji: "⚡" };
 }
 
 export function getMatchColor(score: number): string {
   if (score >= 80) return "text-emerald-600";
   if (score >= 55) return "text-amber-600";
-  return "text-red-500";
+  return "text-rose-500";
 }
 
 export function getMatchBgColor(score: number): string {
   if (score >= 80) return "bg-emerald-50 border-emerald-200";
   if (score >= 55) return "bg-amber-50 border-amber-200";
-  return "bg-red-50 border-red-200";
+  return "bg-rose-50 border-rose-200";
 }

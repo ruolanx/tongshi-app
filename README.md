@@ -1,74 +1,69 @@
 # Tongshi — 我们适合做同事吗？
 
-一个轻量级 MVP，让用户通过 10 个工作场景问题比较工作风格匹配度。
+双人互动小游戏：两个人通过一个链接进入同一个房间，各自回答 10 个工作场景问题，最后看匹配结果。
+
+## 玩法
+
+1. 创建房间 → 获得一个链接
+2. 把链接发给朋友
+3. 两人各自起代号加入
+4. 同时回答 10 道题（能实时看到对方进度）
+5. 两人都答完 → 揭晓匹配分数 + 逐题对比
+6. 分享结果到社交媒体
 
 ## Tech Stack
 
-- **Next.js** (App Router + TypeScript)
+- **Next.js 16** (App Router + TypeScript)
 - **Tailwind CSS**
-- **Supabase** (Database + Auth-less)
+- **Supabase** (Database, no auth)
 
 ## Getting Started
 
-### 1. 创建 Supabase 项目
+### 1. Supabase 设置
 
-前往 [supabase.com](https://supabase.com) 创建一个新项目。
+前往 [supabase.com](https://supabase.com) 创建项目，在 SQL Editor 中执行 `supabase/schema.sql`。
 
-### 2. 运行数据库 Schema
-
-在 Supabase Dashboard → SQL Editor 中执行 `supabase/schema.sql` 文件的内容。
-这会创建 `users`、`questions`、`answers` 三张表，并填充 10 道占位题目。
-
-### 3. 配置环境变量
+### 2. 环境变量
 
 ```bash
 cp .env.example .env.local
 ```
-
-填入你的 Supabase 项目 URL 和 anon key：
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-### 4. 安装 & 启动
+### 3. 启动
 
 ```bash
 npm install
 npm run dev
 ```
 
-打开 [http://localhost:3000](http://localhost:3000)。
+打开 [http://localhost:3000](http://localhost:3000)
 
 ## 项目结构
 
 ```
-tongshi-app/
-├── app/
-│   ├── page.tsx              # 加入页面（输入代号）
-│   ├── questions/page.tsx    # 答题页面
-│   ├── dashboard/page.tsx    # 仪表盘（用户列表）
-│   └── compare/[userId]/     # 对比页面
-├── components/               # UI 组件
-├── lib/
-│   ├── supabase.ts           # Supabase 客户端
-│   ├── match.ts              # 匹配分数计算
-│   ├── user-context.tsx      # 用户会话管理
-│   └── utils.ts              # 工具函数
-├── types/                    # TypeScript 类型
-├── seed/                     # 题目种子数据
-└── supabase/
-    └── schema.sql            # 数据库 Schema + 种子数据
+app/
+  page.tsx                # 首页 — 创建房间
+  s/[code]/page.tsx       # 房间页 — 加入/等待/答题/结果
+components/
+  join-form.tsx           # 输入代号
+  waiting-room.tsx        # 等待对方
+  question-flow.tsx       # 答题（双方进度）
+  match-results.tsx       # 匹配结果
+  share-buttons.tsx       # 社交分享
+  avatar.tsx              # 头像
+lib/
+  supabase.ts             # Supabase 客户端
+  session.ts              # 房间/玩家 DB 操作
+  match.ts                # 匹配算法
+  utils.ts                # 工具函数
+types/index.ts            # TypeScript 类型
+supabase/schema.sql       # 建表 + 种子数据
 ```
-
-## 功能
-
-- **代号加入** — 无需注册，选个代号即可
-- **10 题场景问答** — 逐题回答，自动保存
-- **用户仪表盘** — 查看所有用户和在线状态
-- **匹配对比** — 与其他用户逐题对比 + 匹配分数
-- **在线状态** — 基于心跳的轻量在线检测
 
 ## 匹配算法
 
@@ -76,6 +71,8 @@ tongshi-app/
 match_score = (相同答案数 / 共同已答题数) × 100
 ```
 
-- 80–100%: Strong match
-- 55–79%: Mixed but workable
-- 0–54%: Friction likely
+| 分数 | 标签 |
+|------|------|
+| 80–100% | 🔥 默契搭档 |
+| 55–79% | 🤝 磨合空间 |
+| 0–54% | ⚡ 火花四溅 |

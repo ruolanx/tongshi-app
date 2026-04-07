@@ -1,37 +1,20 @@
-/**
- * Generate a deterministic HSL color from a string (codename).
- * Used for avatar backgrounds.
- */
 export function codenameToColor(codename: string): string {
   let hash = 0;
   for (let i = 0; i < codename.length; i++) {
     hash = codename.charCodeAt(i) + ((hash << 5) - hash);
   }
   const hue = Math.abs(hash) % 360;
-  return `hsl(${hue}, 65%, 55%)`;
+  return `hsl(${hue}, 60%, 55%)`;
 }
 
-/**
- * Format relative time for "last seen" label.
- */
-export function formatLastSeen(lastActiveAt: string): string {
-  const now = Date.now();
-  const then = new Date(lastActiveAt).getTime();
-  const diffMs = now - then;
-  const diffMin = Math.floor(diffMs / 60_000);
+const CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
-  if (diffMin < 2) return "在线";
-  if (diffMin < 60) return `${diffMin}分钟前`;
-  const diffHours = Math.floor(diffMin / 60);
-  if (diffHours < 24) return `${diffHours}小时前`;
-  const diffDays = Math.floor(diffHours / 24);
-  return `${diffDays}天前`;
-}
-
-export function isOnline(lastActiveAt: string): boolean {
-  const now = Date.now();
-  const then = new Date(lastActiveAt).getTime();
-  return now - then < 2 * 60_000; // 2 minutes
+export function generateCode(length = 6): string {
+  let code = "";
+  for (let i = 0; i < length; i++) {
+    code += CHARS[Math.floor(Math.random() * CHARS.length)];
+  }
+  return code;
 }
 
 export function getOptionText(
@@ -40,4 +23,8 @@ export function getOptionText(
 ): string {
   const map = { A: question.option_a, B: question.option_b, C: question.option_c, D: question.option_d };
   return map[option];
+}
+
+export function getShareText(myCodename: string, theirCodename: string, score: number): string {
+  return `我（${myCodename}）和 ${theirCodename} 的同事匹配度是 ${score}%！来测测你和朋友有多合拍 👉`;
 }

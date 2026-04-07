@@ -1,27 +1,23 @@
-import { Answer, CompareResult, CompareDetail, Question, OptionKey } from "@/types";
+import { Answer, MatchResult, MatchDetail, Question, OptionKey } from "@/types";
 
 export function calculateMatch(
   myAnswers: Answer[],
   theirAnswers: Answer[],
   questions: Question[]
-): CompareResult {
-  const myAnswerMap = new Map<number, OptionKey>();
-  const theirAnswerMap = new Map<number, OptionKey>();
+): MatchResult {
+  const myMap = new Map<number, OptionKey>();
+  const theirMap = new Map<number, OptionKey>();
 
-  for (const a of myAnswers) {
-    myAnswerMap.set(a.question_id, a.selected_option);
-  }
-  for (const a of theirAnswers) {
-    theirAnswerMap.set(a.question_id, a.selected_option);
-  }
+  for (const a of myAnswers) myMap.set(a.question_id, a.selected_option);
+  for (const a of theirAnswers) theirMap.set(a.question_id, a.selected_option);
 
-  const details: CompareDetail[] = [];
+  const details: MatchDetail[] = [];
   let commonAnswered = 0;
   let matchingAnswers = 0;
 
   for (const q of questions) {
-    const myAnswer = myAnswerMap.get(q.id) ?? null;
-    const theirAnswer = theirAnswerMap.get(q.id) ?? null;
+    const myAnswer = myMap.get(q.id) ?? null;
+    const theirAnswer = theirMap.get(q.id) ?? null;
     const bothAnswered = myAnswer !== null && theirAnswer !== null;
     const isMatch = bothAnswered && myAnswer === theirAnswer;
 
@@ -38,11 +34,5 @@ export function calculateMatch(
       ? Math.round((matchingAnswers / commonAnswered) * 100)
       : 0;
 
-  return {
-    totalQuestions: questions.length,
-    commonAnswered,
-    matchingAnswers,
-    matchScore,
-    details,
-  };
+  return { totalQuestions: questions.length, commonAnswered, matchingAnswers, matchScore, details };
 }
