@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Question, OptionKey } from "@/types";
 import { Avatar } from "./avatar";
+import { useI18n } from "@/lib/i18n";
+import { SEED_QUESTIONS_EN } from "@/seed/questions";
 
 export function QuestionFlow({
   questions,
@@ -19,6 +21,7 @@ export function QuestionFlow({
   myCodename: string;
   onAnswer: (questionId: number, option: OptionKey) => Promise<void>;
 }) {
+  const { t, locale } = useI18n();
   const [currentIndex, setCurrentIndex] = useState(() => {
     const first = questions.findIndex((q) => !answers[q.id]);
     return first >= 0 ? first : 0;
@@ -29,11 +32,21 @@ export function QuestionFlow({
   const question = questions[currentIndex];
   if (!question) return null;
 
+  // Use English question text if locale is EN
+  const enQ = locale === "en" ? SEED_QUESTIONS_EN[currentIndex] : null;
+  const prompt = enQ?.prompt ?? question.prompt;
+  const optionTexts = {
+    A: enQ?.option_a ?? question.option_a,
+    B: enQ?.option_b ?? question.option_b,
+    C: enQ?.option_c ?? question.option_c,
+    D: enQ?.option_d ?? question.option_d,
+  };
+
   const options: { key: OptionKey; text: string }[] = [
-    { key: "A", text: question.option_a },
-    { key: "B", text: question.option_b },
-    { key: "C", text: question.option_c },
-    { key: "D", text: question.option_d },
+    { key: "A", text: optionTexts.A },
+    { key: "B", text: optionTexts.B },
+    { key: "C", text: optionTexts.C },
+    { key: "D", text: optionTexts.D },
   ];
 
   const selected = answers[question.id];
@@ -58,7 +71,7 @@ export function QuestionFlow({
           <div className="flex items-center gap-2">
             <Avatar codename={myCodename} size="sm" />
             <span className="text-xs text-zinc-500">
-              你 {answeredCount}/{questions.length}
+              {t("q.you")} {answeredCount}/{questions.length}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -72,14 +85,10 @@ export function QuestionFlow({
         {/* Progress */}
         <div className="mb-5">
           <div className="h-1.5 bg-zinc-200 rounded-full overflow-hidden relative">
-            {/* My progress */}
             <div
               className="absolute h-full bg-zinc-900 rounded-full transition-all duration-300"
-              style={{
-                width: `${(answeredCount / questions.length) * 100}%`,
-              }}
+              style={{ width: `${(answeredCount / questions.length) * 100}%` }}
             />
-            {/* Partner progress (lighter) */}
             <div
               className="absolute h-full bg-zinc-300 rounded-full transition-all duration-300"
               style={{
@@ -93,10 +102,10 @@ export function QuestionFlow({
         {/* Question card */}
         <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 p-6">
           <div className="text-xs text-zinc-400 mb-2">
-            第 {currentIndex + 1} 题
+            {t("q.question_num").replace("{n}", String(currentIndex + 1))}
           </div>
           <p className="text-lg font-medium text-zinc-900 mb-6 leading-relaxed">
-            {question.prompt}
+            {prompt}
           </p>
 
           <div className="space-y-2.5">
@@ -125,7 +134,7 @@ export function QuestionFlow({
             disabled={currentIndex === 0}
             className="rounded-lg px-4 py-2 text-sm text-zinc-500 hover:bg-zinc-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
-            ← 上一题
+            {t("q.prev")}
           </button>
 
           {currentIndex < questions.length - 1 ? (
@@ -133,11 +142,11 @@ export function QuestionFlow({
               onClick={() => setCurrentIndex((i) => i + 1)}
               className="rounded-lg px-4 py-2 text-sm text-zinc-500 hover:bg-zinc-200 transition-colors"
             >
-              下一题 →
+              {t("q.next")}
             </button>
           ) : answeredCount >= questions.length ? (
             <div className="text-xs text-emerald-600 font-medium">
-              全部作答完毕 ✓
+              {t("q.done")}
             </div>
           ) : null}
         </div>

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { I18nProvider } from "@/lib/i18n";
+import { LangToggle } from "@/components/lang-toggle";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,9 +19,9 @@ export const metadata: Metadata = {
   description:
     "和朋友一起回答 10 个工作场景问题，看看你们的工作风格有多合拍。",
   openGraph: {
-    title: "Tongshi — 我们适合做同事吗？",
+    title: "Tongshi — Should we be coworkers?",
     description:
-      "和朋友一起回答 10 个工作场景问题，看看你们的工作风格有多合拍。",
+      "Answer 10 work-scenario questions with a friend. See how well your styles match.",
   },
 };
 
@@ -33,7 +35,12 @@ export default function RootLayout({
       lang="zh"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-zinc-50">{children}</body>
+      <body className="min-h-full flex flex-col bg-zinc-50">
+        <I18nProvider>
+          <LangToggle />
+          {children}
+        </I18nProvider>
+      </body>
     </html>
   );
 }

@@ -48,20 +48,27 @@ export interface MatchDetail {
   isMatch: boolean;
 }
 
-export function getMatchLabel(score: number): { text: string; emoji: string } {
-  if (score >= 80) return { text: "默契搭档", emoji: "🔥" };
-  if (score >= 55) return { text: "磨合空间", emoji: "🤝" };
-  return { text: "火花四溅", emoji: "⚡" };
+/**
+ * Returns the tier key (0, 10, 20, ... 90) for the i18n lookup.
+ * Each 10% band maps to a tier.
+ */
+export function getMatchTier(score: number): number {
+  if (score >= 95) return 90;
+  return Math.floor(score / 10) * 10;
 }
 
 export function getMatchColor(score: number): string {
   if (score >= 80) return "text-emerald-600";
-  if (score >= 55) return "text-amber-600";
-  return "text-rose-500";
+  if (score >= 60) return "text-lime-600";
+  if (score >= 40) return "text-amber-600";
+  if (score >= 20) return "text-orange-600";
+  return "text-red-600";
 }
 
 export function getMatchBgColor(score: number): string {
   if (score >= 80) return "bg-emerald-50 border-emerald-200";
-  if (score >= 55) return "bg-amber-50 border-amber-200";
-  return "bg-rose-50 border-rose-200";
+  if (score >= 60) return "bg-lime-50 border-lime-200";
+  if (score >= 40) return "bg-amber-50 border-amber-200";
+  if (score >= 20) return "bg-orange-50 border-orange-200";
+  return "bg-red-50 border-red-200";
 }
