@@ -107,6 +107,7 @@ const zh: Record<string, string> = {
   "share.copy": "复制文案",
   "share.copied": "已复制 ✓",
   "share.twitter": "分享到 𝕏",
+  "share.save_card": "保存卡片",
   "share.more": "更多…",
   "share.text": "我（{me}）和 {them} 的同事匹配度是 {score}%！来测测你和朋友有多合拍 👉",
 
@@ -203,6 +204,7 @@ const en: Record<string, string> = {
   "share.copy": "Copy Text",
   "share.copied": "Copied ✓",
   "share.twitter": "Share on 𝕏",
+  "share.save_card": "Save Card",
   "share.more": "More…",
   "share.text": "{me} and {them} got a {score}% coworker match! Test yours 👉",
 

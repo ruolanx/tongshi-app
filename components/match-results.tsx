@@ -32,15 +32,24 @@ export function MatchResults({
   const tierLabel = t(`match.tier.${tier}`);
   const tierEmoji = t(`match.emoji.${tier}`);
 
-  const shareUrl = typeof window !== "undefined" ? window.location.origin : "";
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const shareUrl = origin;
   const shareText = t("share.text")
     .replace("{me}", myCodename)
     .replace("{them}", partnerCodename)
     .replace("{score}", String(result.matchScore));
 
+  const ogUrl = `${origin}/api/og?p1=${encodeURIComponent(myCodename)}&p2=${encodeURIComponent(partnerCodename)}&score=${result.matchScore}&lang=${locale}`;
+
   return (
     <div className="flex flex-1 flex-col items-center px-4 py-8">
       <div className="w-full max-w-lg">
+        {/* Preview card image */}
+        <div className="mb-4 rounded-xl overflow-hidden border border-zinc-200 shadow-sm">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={ogUrl} alt="Match result card" className="w-full" />
+        </div>
+
         {/* Score header */}
         <div
           className={`rounded-2xl border p-8 text-center mb-6 ${getMatchBgColor(result.matchScore)}`}
@@ -73,7 +82,7 @@ export function MatchResults({
         </div>
 
         {/* Share */}
-        <ShareButtons text={shareText} url={shareUrl} />
+        <ShareButtons text={shareText} url={shareUrl} ogUrl={ogUrl} />
 
         {/* Per-question breakdown */}
         <h3 className="text-sm font-semibold text-zinc-500 mb-3 mt-8">
